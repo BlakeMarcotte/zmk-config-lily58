@@ -4,7 +4,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: zmkfirmware/zmk-build-arm:stable
+      image: zmkfirmware/zmk-build-arm:2.5
     name: Build
     steps:
       - name: Checkout
@@ -29,44 +29,18 @@ jobs:
         run: west init -l config
       - name: West Update
         run: west update
-      - name: Show ZMK version
-        run: west --version && west zephyr-export --version
       - name: West Zephyr export
         run: west zephyr-export
       - name: West Build (Lily58 Left)
         run: west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=lily58_left -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Lily58 DTS File
-        if: always()
-        run: |
-          if [ -f "build/zephyr/nice_nano_v2.dts.pre.tmp" ]; then
-            cat -n build/zephyr/nice_nano_v2.dts.pre.tmp
-          else
-            echo "DTS file not found. Listing build directory contents:"
-            ls -R build
-          fi
+        if: ${{ always() }}
+        run: cat -n build/zephyr/nice_nano_v2.dts.pre.tmp
       - name: Lily58 Left Kconfig file
-        if: always()
-        run: |
-          if [ -f "build/zephyr/.config" ]; then
-            cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
-          else
-            echo "Kconfig file not found. Listing build directory contents:"
-            ls -R build
-          fi
-      - name: Show full build logs
-        if: always()
-        run: |
-          if [ -f "build/build.log" ]; then
-            cat build/build.log
-          else
-            echo "Build log not found. Listing build directory contents:"
-            ls -R build
-          fi
+        run: cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
       - name: Rename zmk.uf2
-        if: success()
         run: cp build/zephyr/zmk.uf2 lily58_left_nice_nano_v2.uf2
       - name: Archive (Lily58 Left)
-        if: success()
         uses: actions/upload-artifact@v2
         with:
           name: firmware
@@ -74,28 +48,10 @@ jobs:
       - name: West Build (Lily58 Right)
         run: west build --pristine -s zmk/app -b nice_nano_v2 -- -DSHIELD=lily58_right -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
       - name: Lily58 Right Kconfig file
-        if: always()
-        run: |
-          if [ -f "build/zephyr/.config" ]; then
-            cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
-          else
-            echo "Kconfig file not found. Listing build directory contents:"
-            ls -R build
-          fi
-      - name: Show full build logs
-        if: always()
-        run: |
-          if [ -f "build/build.log" ]; then
-            cat build/build.log
-          else
-            echo "Build log not found. Listing build directory contents:"
-            ls -R build
-          fi
+        run: cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
       - name: Rename zmk.uf2
-        if: success()
         run: cp build/zephyr/zmk.uf2 lily58_right_nice_nano_v2.uf2
       - name: Archive (Lily58 Right)
-        if: success()
         uses: actions/upload-artifact@v2
         with:
           name: firmware
