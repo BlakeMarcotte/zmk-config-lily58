@@ -3,6 +3,17 @@
 #include <dt-bindings/zmk/bt.h>
 
 / {
+    behaviors {
+        mo_tog: behavior_mo_tog {
+            compatible = "zmk,behavior-hold-tap";
+            label = "mo_tog";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <200>;
+            bindings = <&mo>, <&tog>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -20,7 +31,7 @@
                 &kp F1    &kp F2 &kp F3 &kp F4 &kp F5 &kp F6      &kp F7 &kp F8 &kp F9 &kp F10 &kp F11 &kp F12
                 &kp EXCL  &kp AT &kp HASH &kp DLLR &kp PRCNT &kp CARET &kp AMPS &kp STAR &kp LPAR &kp RPAR &kp UNDER &kp PLUS
                 &kp TAB   &kp CAPS &kp LC(A) &kp LC(C) &kp LC(V) &kp LC(Z) &kp HOME &kp PG_DN &kp PG_UP &kp END &kp DEL &kp BSPC
-                                   &mo 2 &kp LSHFT &kp LCTRL &kp ENTER &kp SPACE &kp LGUI &kp LALT &mo 1
+                                   &mo_tog 2 0 &kp LSHFT &kp LCTRL &kp ENTER &kp SPACE &kp LGUI &kp LALT &mo_tog 1 0
             >;
         };
 
